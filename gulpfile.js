@@ -34,7 +34,7 @@ function copyContentToBuild() {
     fs.mkdirSync('build')
   }
 
-  //gulp.src(['node_modules/semantic-ui-css/semantic.min.css', 'src/**/*', '!src/js/{,**}']).pipe(gulp.dest('build'))
+  gulp.src(['src/**/*', '!src/ts/', '!src/ts/{*,**}']).pipe(gulp.dest('build'))
 }
 
 gulp.task('bundle', function() {

@@ -7,9 +7,12 @@
   "browser_action": {
     "default_title": "MAL"
   },
-  "background": {
-    "scripts": ["iconHandlers.js"]
-  },
+  "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["myanimelist.js"]
+    }
+  ],
   "permissions": [
     "webRequest",
     "https://*.myanimelist.com/"
