@@ -1,18 +1,17 @@
 {
   "manifest_version": 2,
 
-  "name": "Politics and War Chrome Extension",
+  "name": "My Anime List Chrome Extension",
   "version": "1.0",
-  "description": "Chrome extension to do some crazy stuff with politics and War (Don't put me on a NSA watchlist please)",
+  "description": "Chrome extension to make my anime list simpilier to use",
   "browser_action": {
-    "default_icon": "./images/icon16.png",
-    "default_title": "Politics and War Enhanced"
+    "default_title": "MAL"
   },
   "background": {
     "scripts": ["iconHandlers.js"]
   },
   "permissions": [
     "webRequest",
-    "https://*.politicsandwar.com/"
+    "https://*.myanimelist.com/"
   ]
 }
