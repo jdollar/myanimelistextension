@@ -2,5 +2,10 @@
   "name": "myanimelistextension",
   "dependencies": {
     "react": "registry:npm/react#15.0.1+20170104200836"
+  },
+  "globalDependencies": {
+    "chrome": "registry:dt/chrome#0.0.0+20170105222330",
+    "filesystem": "registry:dt/filesystem#0.0.0+20160510010627",
+    "filewriter": "registry:dt/filewriter#0.0.0+20160714054521"
   }
 }

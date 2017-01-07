@@ -5,15 +5,31 @@ var browserify = require('browserify')
 var watchify = require('watchify')
 var tsify = require('tsify')
 
-var bundler = browserify({
-  entries: ['./src/ts/App.tsx'],
-  cache: {},
-  packageCache: {},
-  extensions: ['.jsx'],
-  plugin: [
-    watchify
-  ]
-}).plugin(tsify, { noImplicitAny: true })
+const BUILD_DIR = './build/'
+
+var filesToBundle = [
+  './src/ts/App.tsx',
+  './src/scripts/messageListener.ts',
+  './src/scripts/background.ts'
+]
+
+var outputJavascriptMap = {}
+outputJavascriptMap[filesToBundle[0]] = 'myanimelist.js'
+outputJavascriptMap[filesToBundle[1]] = 'messageListener.js'
+outputJavascriptMap[filesToBundle[2]] = 'background.js'
+
+var bundlers = filesToBundle.map(function(file) { return createBundler(file) })
+
+function createBundler(entry) {
+  return browserify({
+    entries: [entry],
+    cache: {},
+    packageCache: {},
+    extensions: ['.jsx'],
+  })
+  .plugin(watchify)
+  .plugin(tsify, {noImplicitAny: true})
+}
 
 function notify(error) {
   console.log(error.message)
@@ -21,10 +37,12 @@ function notify(error) {
   notifier.notify({title: fileName, message: error.description})
 }
 
-function bundle() {
+function bundle(bundler) {
+  let outputFileName = outputJavascriptMap[bundler._options.entries[0]];
+
   bundler.bundle()
     .on('error', notify)
-    .pipe(fs.createWriteStream('./build/myanimelist.js'))
+    .pipe(fs.createWriteStream(BUILD_DIR + outputFileName))
 }
 
 function copyContentToBuild() {
@@ -34,11 +52,13 @@ function copyContentToBuild() {
     fs.mkdirSync('build')
   }
 
-  gulp.src(['src/**/*', '!src/ts/', '!src/ts/{*,**}']).pipe(gulp.dest('build'))
+  gulp.src(['src/manifest.json']).pipe(gulp.dest('build'))
 }
 
 gulp.task('bundle', function() {
-  bundle()
+  for (let i = 0; i < bundlers.length; i++) {
+    bundle(bundlers[i]);
+  }
 })
 
 gulp.task('build', function() {
@@ -47,6 +67,10 @@ gulp.task('build', function() {
 
 gulp.task('deployBuild', ['build', 'bundle'])
 gulp.task('dev', ['build', 'bundle'], function() {
-  bundler.on('update', bundle)
+  for (let i = 0; i < bundlers.length; i++) {
+    bundlers[i].on('update', function(ids) {
+      bundle(bundlers[i])
+    })
+  }
 })
 gulp.task('default', ['dev'])
