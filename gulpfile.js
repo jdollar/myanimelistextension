@@ -8,15 +8,13 @@ var tsify = require('tsify')
 const BUILD_DIR = './build/'
 
 var filesToBundle = [
-  './src/ts/App.tsx',
-  './src/scripts/messageListener.ts',
+  './src/scripts/myAnimeList.tsx',
   './src/scripts/background.ts'
 ]
 
 var outputJavascriptMap = {}
 outputJavascriptMap[filesToBundle[0]] = 'myanimelist.js'
-outputJavascriptMap[filesToBundle[1]] = 'messageListener.js'
-outputJavascriptMap[filesToBundle[2]] = 'background.js'
+outputJavascriptMap[filesToBundle[1]] = 'background.js'
 
 var bundlers = filesToBundle.map(function(file) { return createBundler(file) })
 
@@ -26,13 +24,15 @@ function createBundler(entry) {
     cache: {},
     packageCache: {},
     extensions: ['.jsx'],
+    plugin: [
+      watchify,
+      tsify
+    ]
   })
-  .plugin(watchify)
-  .plugin(tsify, {noImplicitAny: true})
 }
 
 function notify(error) {
-  console.log(error.message)
+  console.log(error)
   var fileName = error.message.match(/[^/]+$/)
   notifier.notify({title: fileName, message: error.description})
 }
